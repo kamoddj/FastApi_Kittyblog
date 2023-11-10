@@ -6,7 +6,7 @@ SQLALCHEMY_DATABASE_URL = "postgresql+psycopg2://postgres:nuttertools@localhost/
 
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
 
-# engine = create_engine("sqlite:///./cat_db.db",
+# engine = create_engine("sqlite:///./cat_DB.db",
 #                        connect_args={"check_same_thread": False})
 
 SessionLocal = sessionmaker(autocommit=False, bind=engine, autoflush=True)

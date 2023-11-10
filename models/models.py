@@ -1,4 +1,4 @@
-from sqlalchemy import (Boolean, Column, DateTime, ForeignKey, Integer,
+from sqlalchemy import (Boolean, Column, ForeignKey, Integer,
                         String, Table)
 from sqlalchemy.orm import relationship
 
@@ -11,9 +11,9 @@ class User(Base):
     id = Column(Integer, primary_key=True, unique=True)
     name = Column(String, unique=True)
     email = Column(String, unique=True)
-    password = Column(String)
-    date = Column(DateTime)
-    is_active = Column(Boolean, default=False)
+    hashed_password = Column(String, nullable=False)
+    # date = Column(DateTime)
+    is_active = Column(Boolean, default=True)
     is_admin = Column(Boolean, default=False)
 
 

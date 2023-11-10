@@ -4,26 +4,23 @@ from sqlalchemy.exc import SQLAlchemyError
 
 from models.database import get_db
 from models.models import User, Cat
-
-from models.shcemas import UserSchemas, CatsBase
-from config.conf import SERVER_EXCEPTION_500, USER_EXCEPTION_404
+from models.shcemas import UserSchemas, CatsBase, UserCreate, UserUpdate
+from config.crud import create_new_user
+from config.exceptions import (SERVER_EXCEPTION_500,
+                               USER_EXCEPTION_404,
+                               ACTIVE_EXCEPTION_409)
 
 
 router = APIRouter(
     prefix='/users',
-    tags=['users'],
+    tags=['user'],
 )
 
 
-@router.post('/create_user',
-             response_model=UserSchemas,
-             description="Добавление пользователя по ID")
-def create_user(user: UserSchemas, db: Session = Depends(get_db)):
+@router.post('/create_user', response_model=UserUpdate)
+def create_user(user: UserCreate, db: Session = Depends(get_db)):
     try:
-        user_model = User(
-            name=user.name,
-            email=user.email
-        )
+        user_model = create_new_user(user=user, db=db)
         db.add(user_model)
         db.commit()
         db.refresh(user_model)
@@ -59,17 +56,19 @@ def get_all_my_cats(user_id: int,
 
 @router.put("/put/{user_id}", response_model=UserSchemas)
 def update_user(user_id: int,
-                upd_user: UserSchemas,
+                upd_user: UserUpdate,
                 db: Session = Depends(get_db)
                 ):
     user = db.query(User).filter(User.id == user_id).first()
+    if not user.is_active:
+        raise ACTIVE_EXCEPTION_409
     if not user:
         raise USER_EXCEPTION_404
     try:
-        user.name = upd_user.name
+        user.name = upd_user.name.title()
         user.email = upd_user.email
         db.commit()
-        return {'name': upd_user.name, "email": upd_user.email}
+        return {'name': upd_user.name.title(), "email": upd_user.email}
     except SQLAlchemyError:
         db.rollback()
         raise SERVER_EXCEPTION_500
@@ -81,7 +80,7 @@ def delete_user(user_id: int, db: Session = Depends(get_db)):
     if not user:
         raise USER_EXCEPTION_404
     try:
-        db.delete(user)
+        user.is_active = False
         db.commit()
         return {"message": "Пользователь удален"}
     except SQLAlchemyError:

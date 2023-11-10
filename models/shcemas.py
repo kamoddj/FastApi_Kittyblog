@@ -1,12 +1,24 @@
-from pydantic import BaseModel
+from typing import Optional
+from pydantic import BaseModel, constr
 
 
 class UserSchemas(BaseModel):
-    name: str
+    name: Optional[constr(min_length=1)]
     email: str
 
     class Config:
         orm_mode = True
+
+
+class UserUpdate(UserSchemas):
+    is_active: bool
+
+    class Config:
+        orm_mode = True
+
+
+class UserCreate(UserSchemas):
+    hashed_password: Optional[constr(min_length=8)]
 
 
 class OwnerSchemas(BaseModel):
@@ -17,7 +29,7 @@ class OwnerSchemas(BaseModel):
 
 
 class AchievementsBase(BaseModel):
-    name: str
+    name: Optional[constr(min_length=1)]
 
 
 class Achievements(AchievementsBase):
@@ -28,7 +40,7 @@ class Achievements(AchievementsBase):
 
 
 class CatsBase(BaseModel):
-    name: str
+    name: Optional[constr(min_length=1)]
     color: str
     birthday: int
 
@@ -45,5 +57,6 @@ class Cats(CatsBase):
         orm_mode = True
 
 
-class CatAchiev(BaseModel):
-    id: int
+class Token(BaseModel):
+    access_token: str
+    token_type: str

@@ -6,7 +6,7 @@ from models.shcemas import AchievementsBase, Achievements
 from models.database import get_db
 from models.models import Achievement, Cat
 
-from config.conf import SERVER_EXCEPTION_500, ACHIEV_EXCEPTION_404
+from config.exceptions import SERVER_EXCEPTION_500, ACHIEV_EXCEPTION_404
 
 
 router = APIRouter(
