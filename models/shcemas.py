@@ -21,6 +21,10 @@ class UserCreate(UserSchemas):
     hashed_password: Optional[constr(min_length=8)]
 
 
+class AdminRegistration(UserCreate):
+    is_admin: bool
+
+
 class OwnerSchemas(BaseModel):
     name: str
 

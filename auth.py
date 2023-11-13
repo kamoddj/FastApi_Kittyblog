@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 
 from config import crud, exceptions
 from models.database import get_db
-from models.models import User
+# from models.models import User
 from models.shcemas import Token
 
 
@@ -33,6 +33,6 @@ def login_for_access_token(
     return {'access_token': access_token, 'token_type': 'bearer'}
 
 
-@router.get('/simple')
-def sample_jwt(current_user: User = Depends(crud.get_current_user)):
-    return {"Success": True, "current_user": current_user}
+# @router.get('/simple')
+# def sample_jwt(current_user: User = Depends(crud.get_current_user)):
+#     return {"Success": True, "current_user": current_user}

@@ -6,7 +6,7 @@ from config.exceptions import UNAUTORIZED_EXCEPTION_401
 from config.hashing import Hasher
 from models.database import get_db
 from models.models import User
-from models.shcemas import UserCreate
+from models.shcemas import UserCreate, AdminRegistration
 from sqlalchemy.orm import Session
 
 
@@ -17,6 +17,17 @@ ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login/token")
+
+
+# FastApi /login
+def create_admin(user: AdminRegistration, db: Session):
+    admin_model = User(
+        name=user.name.title(),
+        email=user.email,
+        hashed_password=Hasher.get_password_hash(user.hashed_password),
+        is_admin=True
+    )
+    return admin_model
 
 
 # FastApi /users
