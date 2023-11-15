@@ -104,7 +104,7 @@ def get_all_my_cats(
     return cats
 
 
-@router.put("/put/{user_id}", response_model=shcemas.UserSchemas)
+@router.put("/update/{user_id}", response_model=shcemas.UserSchemas)
 def update_user(
     user_id: int,
     upd_user: shcemas.UserUpdate,

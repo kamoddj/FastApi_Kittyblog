@@ -18,7 +18,7 @@ CAT_EXCEPTION_404 = HTTPException(
 
 USER_EXCEPTION_404 = HTTPException(
     status_code=status.HTTP_400_BAD_REQUEST,
-    detail="Пользователь не найден"
+    detail="Пользователь не найден или удален"
 )
 
 UNAUTORIZED_EXCEPTION_401 = HTTPException(
@@ -39,5 +39,5 @@ ACTIVE_EXCEPTION_409 = HTTPException(
 
 STRANER_ID_EXEPTION = HTTPException(
     status_code=status.HTTP_400_BAD_REQUEST,
-    detail="Использованы неверные данные"
+    detail="Использованы чужие или неверные данные"
 )

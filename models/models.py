@@ -12,7 +12,6 @@ class User(Base):
     name = Column(String, unique=True)
     email = Column(String, unique=True)
     hashed_password = Column(String, nullable=False)
-    # date = Column(DateTime)
     is_active = Column(Boolean, default=True)
     is_admin = Column(Boolean, default=False)
 
@@ -34,7 +33,11 @@ class Cat(Base):
     owner_id = Column(Integer, ForeignKey('users.id'))
     owner = relationship("User", backref="cats")
 
-    achievements = relationship("Achievement", secondary="cat_achievements")
+    achievements = relationship(
+        "Achievement",
+        secondary="cat_achievements",
+        cascade="all, delete"
+    )
 
 
 cat_achievements = Table(

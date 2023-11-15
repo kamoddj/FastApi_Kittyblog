@@ -5,9 +5,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 
 from config import crud, exceptions
-from models.database import get_db
-# from models.models import User
-from models.shcemas import Token
+from models import database, shcemas
 
 
 router = APIRouter(
@@ -16,10 +14,10 @@ router = APIRouter(
 )
 
 
-@router.post("/token", response_model=Token)
+@router.post("/token", response_model=shcemas.Token)
 def login_for_access_token(
     form_data: OAuth2PasswordRequestForm = Depends(),
-    db: Session = Depends(get_db)
+    db: Session = Depends(database.get_db)
 ):
     user = crud.authenticate_user(form_data.username, form_data.password, db)
     if not user:
@@ -31,8 +29,3 @@ def login_for_access_token(
         expires_delta=access_token_expires
     )
     return {'access_token': access_token, 'token_type': 'bearer'}
-
-
-# @router.get('/simple')
-# def sample_jwt(current_user: User = Depends(crud.get_current_user)):
-#     return {"Success": True, "current_user": current_user}

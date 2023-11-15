@@ -1,12 +1,9 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
 
-from models.database import get_db
-from models.models import Cat, Achievement, User
-
-from models.shcemas import Cats, CatsBase, CatsCreate, AchievementsBase
-from config.exceptions import SERVER_EXCEPTION_500, CAT_EXCEPTION_404
+from config import exceptions, crud
+from models import models, database, shcemas
 
 
 router = APIRouter(
@@ -15,60 +12,62 @@ router = APIRouter(
 )
 
 
-@router.post('/create_cat',
-             response_model=Cats,
-             description="Добавление котика по ID")
-def create_cat(user_id: int,
-               cat: CatsCreate,
-               achievment: AchievementsBase,
-               db: Session = Depends(get_db)):
+@router.post('/create_cat', response_model=shcemas.Cats)
+def create_cat(
+    cat: shcemas.CatsCreate,
+    achievment: shcemas.AchievementsBase,
+    current_user: models.User = Depends(crud.get_current_user),
+    db: Session = Depends(database.get_db)
+):
     try:
-        user = db.query(User).filter(User.id == user_id).first()
-        if user.is_active:
-            achiev_model = Achievement(
+        user = db.query(models.User).filter(
+            models.User.id == current_user.id
+        ).first()
+        if user.is_active or current_user.is_admin:
+            achiev_model = models.Achievement(
                 name=achievment.name
             )
-            cat_model = Cat(
+            cat_model = models.Cat(
                 name=cat.name,
                 color=cat.color,
                 birthday=cat.birthday,
-                owner_id=user_id,
+                owner_id=current_user.id,
             )
             db.add_all([cat_model, achiev_model])
             cat_model.achievements.append(achiev_model)
             db.commit()
             return cat_model
         else:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail='Пользователь удален!'
-            )
+            raise exceptions.USER_EXCEPTION_404
     except SQLAlchemyError:
-        raise SERVER_EXCEPTION_500
+        raise exceptions.SERVER_EXCEPTION_500
 
 
-@router.get('/get/{cat_id}',
-            response_model=Cats,
-            description="Получение котика по ID")
-def get_cat(cat_id: int, db: Session = Depends(get_db)):
-    cat = db.query(Cat).filter(Cat.id == cat_id).first()
+@router.get('/get/{cat_id}', response_model=shcemas.Cats,)
+def get_cat(
+    cat_id: int,
+    current_user: models.User = Depends(crud.get_current_user),
+    db: Session = Depends(database.get_db)
+):
+    cat = db.query(models.Cat).filter(models.Cat.id == cat_id).first()
     if not cat:
-        raise CAT_EXCEPTION_404
+        raise exceptions.CAT_EXCEPTION_404
     return cat
 
 
-@router.put('/put/{cat_id}/',
-            response_model=CatsBase,
-            description="Редактирование котика по ID")
+@router.put('/update/{cat_id}/', response_model=shcemas.CatsBase)
 def update_cat(
     cat_id: int,
-    updated_cat: CatsBase,
-    db: Session = Depends(get_db)
-     ):
-    cat = db.query(Cat).filter(Cat.id == cat_id).first()
+    updated_cat: shcemas.CatsBase,
+    current_user: models.User = Depends(crud.get_current_user),
+    db: Session = Depends(database.get_db)
+):
+    cat = db.query(models.Cat).filter(models.Cat.id == cat_id).first()
     if not cat:
-        raise CAT_EXCEPTION_404
+        raise exceptions.CAT_EXCEPTION_404
     try:
+        if cat.owner_id != current_user.id and not current_user.is_admin:
+            raise exceptions.STRANER_ID_EXEPTION
         cat.name = updated_cat.name
         cat.color = updated_cat.color
         cat.birthday = updated_cat.birthday
@@ -76,19 +75,24 @@ def update_cat(
         return cat
     except SQLAlchemyError:
         db.rollback()
-        raise SERVER_EXCEPTION_500
+        raise exceptions.SERVER_EXCEPTION_500
 
 
-@router.delete('/delete/{cat_id}',
-               description="Удаление котика по ID")
-def delete_cat(cat_id: int, db: Session = Depends(get_db)):
-    cat = db.query(Cat).filter(Cat.id == cat_id).first()
+@router.delete('/delete/{cat_id}')
+def delete_cat(
+    cat_id: int,
+    current_user: models.User = Depends(crud.get_current_user),
+    db: Session = Depends(database.get_db)
+):
+    cat = db.query(models.Cat).filter(models.Cat.id == cat_id).first()
     if not cat:
-        raise CAT_EXCEPTION_404
+        raise exceptions.CAT_EXCEPTION_404
     try:
+        if cat.owner_id != current_user.id and not current_user.is_admin:
+            raise exceptions.STRANER_ID_EXEPTION
         db.delete(cat)
         db.commit()
         return {"message": "Котик удален!"}
     except SQLAlchemyError:
         db.rollback()
-        raise SERVER_EXCEPTION_500
+        raise exceptions.SERVER_EXCEPTION_500
