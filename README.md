@@ -22,5 +22,5 @@
 
 - Клонировать репозиторий:
 ```
-[https://github.com/mikhailsoldatkin/foodgram-project-react.git](https://github.com/kamoddj/FastApi_Kittyblog.git)https://github.com/kamoddj/FastApi_Kittyblog.git
+https://github.com/kamoddj/FastApi_Kittyblog.git
 ```
