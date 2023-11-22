@@ -20,7 +20,6 @@
 
 
 ### Запуск проекта на локальной машине:
-
 - Клонировать репозиторий:
 ```
 git clone git@github.com:kamoddj/FastApi_Kittyblog.git
@@ -29,7 +28,16 @@ git clone git@github.com:kamoddj/FastApi_Kittyblog.git
 ```
 pip install -r requirements.txt
 ```
+- В директории проекта файл .env.example переименовать в .env и заполнить своими данными:
+```
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=postgres
+DB_USER=postgres
+DB_PASS=postgres
+```
 -Запускаем проект
 ```
 uvicorn main:app --reload
 ```
+Автор проекта: Погуляйло Сергей
