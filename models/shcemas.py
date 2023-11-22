@@ -48,7 +48,8 @@ class OwnerSchemas(BaseModel):
 
 # Achievements Schems
 class AchievementsBase(BaseModel):
-    name: Optional[constr(min_length=1)]
+    name: str
+    # name: Optional[constr(min_length=1)]
 
 
 class Achievements(AchievementsBase):

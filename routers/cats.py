@@ -34,9 +34,13 @@ def create_cat(
                 birthday=birthday_cat,
                 owner_id=current_user.id,
             )
-            db.add_all([cat_model, achiev_model])
-            cat_model.achievements.append(achiev_model)
-            db.commit()
+            if len(achievment.name) == 0:
+                db.add(cat_model)
+                db.commit()
+            else:
+                db.add_all([cat_model, achiev_model])
+                cat_model.achievements.append(achiev_model)
+                db.commit()
             return cat_model
         else:
             raise exceptions.USER_EXCEPTION_404
