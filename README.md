@@ -21,3 +21,14 @@
 ### Запуск проекта на локальной машине:
 
 - Клонировать репозиторий:
+```
+git clone git@github.com:kamoddj/FastApi_Kittyblog.git
+```
+-Устанавливаем зависимости 
+```
+pip install -r requirements.txt
+```
+-Запускаем проект
+```
+uvicorn main:app --reload
+```
