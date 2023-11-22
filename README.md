@@ -40,3 +40,4 @@ DB_PASS=postgres
 ```
 uvicorn main:app --reload
 ```
+Автор проекта: Погуляйло Сергей
