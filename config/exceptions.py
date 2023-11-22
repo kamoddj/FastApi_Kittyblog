@@ -1,4 +1,5 @@
 from fastapi import HTTPException, status
+
 # Исключения
 
 SERVER_EXCEPTION_500 = HTTPException(
@@ -14,6 +15,11 @@ ACHIEV_EXCEPTION_404 = HTTPException(
 CAT_EXCEPTION_404 = HTTPException(
     status_code=status.HTTP_404_NOT_FOUND,
     detail="Котик не найден"
+)
+
+CAT_EXCEPTION_409 = HTTPException(
+    status_code=status.HTTP_409_CONFLICT,
+    detail="Котики столько не живут"
 )
 
 USER_EXCEPTION_404 = HTTPException(

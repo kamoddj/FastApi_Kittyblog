@@ -1,10 +1,9 @@
 from fastapi import APIRouter, Depends
-from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.orm import Session
 
+from config import crud, exceptions
 from models import database, models, shcemas
-from config import exceptions, crud
-
 
 router = APIRouter(
     prefix="/achievements",

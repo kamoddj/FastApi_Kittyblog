@@ -1,10 +1,9 @@
 from fastapi import APIRouter, Depends
-from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.orm import Session
 
-from config import exceptions, crud
-from models import models, database, shcemas
-
+from config import crud, exceptions
+from models import database, models, shcemas
 
 router = APIRouter(
     prefix='/cats',
@@ -14,6 +13,7 @@ router = APIRouter(
 
 @router.post('/create_cat', response_model=shcemas.Cats)
 def create_cat(
+    color: shcemas.ColorValidation,
     cat: shcemas.CatsCreate,
     achievment: shcemas.AchievementsBase,
     current_user: models.User = Depends(crud.get_current_user),
@@ -27,10 +27,11 @@ def create_cat(
             achiev_model = models.Achievement(
                 name=achievment.name
             )
+            birthday_cat = shcemas.CatsBase.validate_date(cat.birthday)
             cat_model = models.Cat(
                 name=cat.name,
-                color=cat.color,
-                birthday=cat.birthday,
+                color=color,
+                birthday=birthday_cat,
                 owner_id=current_user.id,
             )
             db.add_all([cat_model, achiev_model])
@@ -57,6 +58,7 @@ def get_cat(
 
 @router.put('/update/{cat_id}/', response_model=shcemas.CatsBase)
 def update_cat(
+    color: shcemas.ColorValidation,
     cat_id: int,
     updated_cat: shcemas.CatsBase,
     current_user: models.User = Depends(crud.get_current_user),
@@ -69,7 +71,7 @@ def update_cat(
         if cat.owner_id != current_user.id and not current_user.is_admin:
             raise exceptions.STRANER_ID_EXEPTION
         cat.name = updated_cat.name
-        cat.color = updated_cat.color
+        cat.color = color
         cat.birthday = updated_cat.birthday
         db.commit()
         return cat

@@ -1,14 +1,15 @@
 from datetime import datetime, timedelta
+
 from fastapi import Depends
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
+from sqlalchemy.orm import Session
+
 from config.exceptions import UNAUTORIZED_EXCEPTION_401
 from config.hashing import Hasher
 from models.database import get_db
 from models.models import User
-from models.shcemas import UserCreate, AdminRegistration
-from sqlalchemy.orm import Session
-
+from models.shcemas import AdminRegistration, UserCreate
 
 # to get a string like this run:
 # openssl rand -hex 32

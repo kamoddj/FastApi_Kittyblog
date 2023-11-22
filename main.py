@@ -1,7 +1,7 @@
 from fastapi import FastAPI
-from routers import cats, users, achivements
-import auth
 
+import auth
+from routers import achivements, cats, users
 
 app = FastAPI(
     title="Cats api"

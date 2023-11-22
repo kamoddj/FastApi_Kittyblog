@@ -1,10 +1,9 @@
 from fastapi import APIRouter, Depends
-from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.orm import Session
 
 from config import crud, exceptions, hashing
 from models import database, models, shcemas
-
 
 router = APIRouter(
     prefix='/users',
