@@ -21,6 +21,3 @@
 ### Запуск проекта на локальной машине:
 
 - Клонировать репозиторий:
-```
-https://github.com/kamoddj/FastApi_Kittyblog.git
-```
